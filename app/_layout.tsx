@@ -62,9 +62,6 @@ function RootLayoutNav() {
           name="login"
           options={{
             presentation: 'modal',
-            headerTitleStyle: {
-              fontFamily: 'mon-sb',
-            },
             headerLeft: () => (
               <TouchableOpacity onPress={() => router.back()}>
                 <Ionicons name="close-outline" size={28} />
@@ -72,8 +69,7 @@ function RootLayoutNav() {
             ),
           }}
         />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="routes" options={{ headerShown: false }} />
       </Stack>
     </ThemeProvider>
   );
