@@ -3,6 +3,7 @@ import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router'; // Usa useLocalSearchParams per ottenere i parametri
 import { FIREBASE_DB } from '../FirebaseConfig';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import MapScreen from '../components/MapScreen'; // Importa il componente MapScreen
 
 const RiddleScreen = () => {
   const { routeId } = useLocalSearchParams(); // Ottieni il parametro routeId
@@ -100,6 +101,15 @@ const RiddleScreen = () => {
         onChangeText={setUserAnswer}
       />
       <Button title="Invia" onPress={checkAnswer} />
+
+      {/* Aggiungi la visualizzazione della mappa con le coordinate attuali */}
+      {coordinates.latitude !== 0 && coordinates.longitude !== 0 && (
+        <MapScreen
+          key={`${coordinates.latitude}-${coordinates.longitude}`} // Chiave unica per forzare il re-render
+          latitude={coordinates.latitude}
+          longitude={coordinates.longitude}
+        />
+      )}
     </View>
   );
 };
@@ -109,10 +119,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 20,
+    width: 400,
   },
   riddleText: {
     fontSize: 18,
     marginBottom: 20,
+    textAlign: 'center',
   },
   input: {
     borderWidth: 1,
