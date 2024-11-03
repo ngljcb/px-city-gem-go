@@ -10,7 +10,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/components/useColorScheme';
+import { useColorScheme } from '../components/useColorScheme'; // Percorso aggiornato in base alla struttura attuale
 import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -21,7 +21,7 @@ export {
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
+  initialRouteName: 'index', // Modifica l'initialRouteName per riflettere l'attuale percorso iniziale
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -29,7 +29,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'), // Verifica se questo font è presente nella directory
     ...FontAwesome.font,
   });
 
@@ -70,6 +70,7 @@ function RootLayoutNav() {
           }}
         />
         <Stack.Screen name="routes" options={{ headerShown: false }} />
+        <Stack.Screen name="riddles" options={{ headerShown: false }} />
       </Stack>
     </ThemeProvider>
   );
