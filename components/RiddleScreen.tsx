@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router'; // Usa useLocalSearchParams per ottenere i parametri
+import { router, useLocalSearchParams } from 'expo-router';
 import { FIREBASE_DB } from '../FirebaseConfig';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import MapScreen from '../components/MapScreen'; // Importa il componente MapScreen
+import MapScreen from '../components/MapScreen';
+import PhotoVerification from '../components/PhotoVerification';
 
 const RiddleScreen = () => {
-  const { routeId } = useLocalSearchParams(); // Ottieni il parametro routeId
+  const { routeId } = useLocalSearchParams();
   const [riddles, setRiddles] = useState<any[]>([]);
   const [currentRiddleIndex, setCurrentRiddleIndex] = useState(0);
   const [riddle, setRiddle] = useState('');
@@ -14,6 +15,7 @@ const RiddleScreen = () => {
   const [userAnswer, setUserAnswer] = useState('');
   const [coordinates, setCoordinates] = useState({ latitude: 0, longitude: 0 });
   const [isCorrect, setIsCorrect] = useState(false);
+  const [photoVerified, setPhotoVerified] = useState(false);
 
   // Carica gli indovinelli da Firestore
   useEffect(() => {
@@ -55,6 +57,7 @@ const RiddleScreen = () => {
       });
       setIsCorrect(false);
       setUserAnswer('');
+      setPhotoVerified(false);
     } else {
       Alert.alert('Congratulazioni!', 'Hai completato tutti gli indovinelli.');
     }
@@ -63,31 +66,39 @@ const RiddleScreen = () => {
   const checkAnswer = () => {
     if (userAnswer.toLowerCase().trim() === answer.toLowerCase().trim()) {
       setIsCorrect(true);
-
-      const nextIndex = currentRiddleIndex + 1;
-
-      // Controlla se l'utente ha completato tutti gli indovinelli
-      if (nextIndex < riddles.length) {
-        Alert.alert('Corretto!', 'Passa alla prossima domanda.', [
-          {
-            text: 'Avanti',
-            onPress: () => {
-              setCurrentRiddleIndex(nextIndex);
-              loadRiddle(nextIndex);
-            },
-          },
-        ]);
-      } else {
-        // Mostra solo il messaggio di congratulazioni se è l'ultimo indovinello
-        Alert.alert(
-          'Congratulazioni!',
-          'Hai completato tutti gli indovinelli.'
-        );
-        router.replace('/routes');
-      }
+      Alert.alert('Corretto!', 'Ora scatta una foto per procedere.');
     } else {
       Alert.alert('Sbagliato', 'Riprova con un’altra risposta.');
       setUserAnswer('');
+    }
+  };
+
+  const handlePhotoVerified = (success: boolean) => {
+    if (success) {
+      setPhotoVerified(true);
+      Alert.alert('Foto verificata!', 'Passa al prossimo indovinello.', [
+        {
+          text: 'Avanti',
+          onPress: () => {
+            const nextIndex = currentRiddleIndex + 1;
+            if (nextIndex < riddles.length) {
+              setCurrentRiddleIndex(nextIndex);
+              loadRiddle(nextIndex);
+            } else {
+              Alert.alert(
+                'Congratulazioni!',
+                'Hai completato tutti gli indovinelli.'
+              );
+              router.replace('/routes');
+            }
+          },
+        },
+      ]);
+    } else {
+      Alert.alert(
+        'Errore',
+        'La foto non è stata scattata nel posto giusto. Riprova.'
+      );
     }
   };
 
@@ -100,16 +111,23 @@ const RiddleScreen = () => {
         value={userAnswer}
         onChangeText={setUserAnswer}
       />
-      <Button title="Invia" onPress={checkAnswer} />
+      {!isCorrect && <Button title="Invia" onPress={checkAnswer} />}
 
       {/* Aggiungi la visualizzazione della mappa con le coordinate attuali */}
       {coordinates.latitude !== 0 && coordinates.longitude !== 0 && (
         <MapScreen
-          key={`${coordinates.latitude}-${coordinates.longitude}`} // Chiave unica per forzare il re-render
+          key={`${coordinates.latitude}-${coordinates.longitude}`}
           latitude={coordinates.latitude}
           longitude={coordinates.longitude}
         />
       )}
+
+      {/* Mostra il componente di verifica della foto se la risposta è corretta */}
+      <PhotoVerification
+        coordinates={coordinates}
+        isAnswerCorrect={isCorrect}
+        onPhotoVerified={handlePhotoVerified}
+      />
     </View>
   );
 };
