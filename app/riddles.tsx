@@ -1,5 +1,3 @@
-// riddles.tsx
-
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -16,17 +14,19 @@ const Riddles = () => {
   const [isCorrect, setIsCorrect] = useState(false);
   const [photoVerified, setPhotoVerified] = useState(false);
   const [completionTime, setCompletionTime] = useState<number | null>(null);
-  const [riddleSession] = useState(new RiddleManager());
+  const [riddleManager] = useState(new RiddleManager());
+  const [loading, setLoading] = useState(true);
 
   const auth = getAuth();
   const user = auth.currentUser;
 
   useEffect(() => {
     if (routeIdStr) {
-      riddleSession
+      setLoading(true);
+      riddleManager
         .loadRiddles(routeIdStr)
         .then(() => {
-          const initialRiddle = riddleSession.getCurrentRiddle();
+          const initialRiddle = riddleManager.getCurrentRiddle();
           if (!initialRiddle) {
             Alert.alert('Errore', 'Non è stato possibile caricare gli indovinelli.');
           }
@@ -34,19 +34,20 @@ const Riddles = () => {
         .catch((error) => {
           console.error('Errore nel caricamento degli indovinelli:', error);
           Alert.alert('Errore', 'Non è stato possibile caricare gli indovinelli.');
-        });
+        })
+        .finally(() => setLoading(false));
     }
   }, [routeIdStr]);
 
-  const currentRiddle = riddleSession.getCurrentRiddle();
+  const currentRiddle = riddleManager.getCurrentRiddle();
 
   const checkAnswer = () => {
-    if (riddleSession.checkAnswer(userAnswer)) {
+    if (riddleManager.checkAnswer(userAnswer)) {
       setIsCorrect(true);
       Alert.alert('Corretto!', 'Ora scatta una foto per procedere.');
 
       // Avvia la sessione al primo indovinello risolto
-      if (riddleSession.isFirstRiddle() && user && routeIdStr) {
+      if (riddleManager.isFirstRiddle() && user && routeIdStr) {
         UserSessionManager.startSession(user.uid, routeIdStr)
           .then(() => console.log('Session started'))
           .catch((error) => console.error('Error starting session:', error));
@@ -59,7 +60,7 @@ const Riddles = () => {
 
   const handlePhotoVerified = async (success: boolean) => {
     if (success) {
-      if (riddleSession.isLastRiddle()) {
+      if (riddleManager.isLastRiddle()) {
         const totalTime = await UserSessionManager.completeSession();
         if (totalTime !== null) {
           setCompletionTime(totalTime);
@@ -72,7 +73,7 @@ const Riddles = () => {
           {
             text: 'Avanti',
             onPress: () => {
-              riddleSession.moveToNextRiddle();
+              riddleManager.moveToNextRiddle();
               setIsCorrect(false);
               setUserAnswer('');
               setPhotoVerified(false);
@@ -94,26 +95,32 @@ const Riddles = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.riddleText}>{currentRiddle?.question}</Text>
-      <TextInput style={styles.input} placeholder="Inserisci la tua risposta" value={userAnswer} onChangeText={setUserAnswer} />
-      {!isCorrect && <Button title="Invia" onPress={checkAnswer} />}
+      {loading ? (
+        <Text>Caricamento...</Text>
+      ) : (
+        <>
+          <Text style={styles.riddleText}>{currentRiddle?.question || 'Errore nel caricamento della domanda'}</Text>
+          <TextInput style={styles.input} placeholder="Inserisci la tua risposta" value={userAnswer} onChangeText={setUserAnswer} />
+          {!isCorrect && <Button title="Invia" onPress={checkAnswer} />}
 
-      {isCorrect && currentRiddle && (
-        <MapScreen
-          key={`${currentRiddle.gps.latitude}-${currentRiddle.gps.longitude}`}
-          latitude={currentRiddle.gps.latitude}
-          longitude={currentRiddle.gps.longitude}
-          isCorrect={isCorrect}
-        />
+          {isCorrect && currentRiddle && (
+            <MapScreen
+              key={`${currentRiddle.gps.latitude}-${currentRiddle.gps.longitude}`}
+              latitude={currentRiddle.gps.latitude}
+              longitude={currentRiddle.gps.longitude}
+              isCorrect={isCorrect}
+            />
+          )}
+
+          <PhotoVerification
+            coordinates={currentRiddle ? currentRiddle.gps : { latitude: 0, longitude: 0 }}
+            isAnswerCorrect={isCorrect}
+            onPhotoVerified={handlePhotoVerified}
+          />
+
+          {completionTime !== null && <Text style={styles.timerText}>Tempo di completamento: {formatTime(completionTime)}</Text>}
+        </>
       )}
-
-      <PhotoVerification
-        coordinates={currentRiddle ? currentRiddle.gps : { latitude: 0, longitude: 0 }}
-        isAnswerCorrect={isCorrect}
-        onPhotoVerified={handlePhotoVerified}
-      />
-
-      {completionTime !== null && <Text style={styles.timerText}>Tempo di completamento: {formatTime(completionTime)}</Text>}
     </View>
   );
 };
