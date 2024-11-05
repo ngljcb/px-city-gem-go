@@ -5,9 +5,12 @@ import { FIREBASE_DB } from '../FirebaseConfig';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import MapScreen from './MapScreen';
 import PhotoVerification from './PhotoVerification';
+import UserSessionManager from './UserSessionManager';
+import { getAuth } from 'firebase/auth';
 
 const RiddleManager = () => {
   const { routeId } = useLocalSearchParams();
+  const routeIdStr = Array.isArray(routeId) ? routeId[0] : routeId;
   const [riddles, setRiddles] = useState<any[]>([]);
   const [currentRiddleIndex, setCurrentRiddleIndex] = useState(0);
   const [riddle, setRiddle] = useState('');
@@ -16,16 +19,17 @@ const RiddleManager = () => {
   const [coordinates, setCoordinates] = useState({ latitude: 0, longitude: 0 });
   const [isCorrect, setIsCorrect] = useState(false);
   const [photoVerified, setPhotoVerified] = useState(false);
-  const [startTime, setStartTime] = useState<number | null>(null);
   const [completionTime, setCompletionTime] = useState<number | null>(null);
 
-  // Carica gli indovinelli da Firestore
+  const auth = getAuth();
+  const user = auth.currentUser;
+
   useEffect(() => {
-    if (routeId) {
+    if (routeIdStr) {
       const fetchRiddles = async () => {
         try {
           const riddlesQuery = query(
-            collection(FIREBASE_DB, `/Routes/${routeId}/Questions`),
+            collection(FIREBASE_DB, `/Routes/${routeIdStr}/Questions`),
             orderBy('route_order', 'asc')
           );
 
@@ -47,7 +51,7 @@ const RiddleManager = () => {
 
       fetchRiddles();
     }
-  }, [routeId]);
+  }, [routeIdStr]);
 
   const loadRiddle = (index: number, riddlesArray: any[] = riddles) => {
     if (index < riddlesArray.length) {
@@ -73,13 +77,14 @@ const RiddleManager = () => {
     }
   };
 
-  const handlePhotoVerified = (success: boolean) => {
+  const handlePhotoVerified = async (success: boolean) => {
     if (success) {
-      if (startTime === null) {
-        setStartTime(Date.now());
-      }
-
       const nextIndex = currentRiddleIndex + 1;
+
+      if (currentRiddleIndex === 0 && user && routeIdStr) {
+        // Avvia la sessione al primo indovinello risolto e salva l'ID utente in locale
+        await UserSessionManager.startSession(user.uid, routeIdStr);
+      }
 
       if (nextIndex < riddles.length) {
         setPhotoVerified(true);
@@ -93,14 +98,19 @@ const RiddleManager = () => {
           },
         ]);
       } else {
-        const totalTime = Date.now() - (startTime ?? Date.now());
-        setCompletionTime(totalTime);
-        Alert.alert(
-          'Congratulazioni!',
-          `Hai completato tutti gli indovinelli in ${formatTime(
-            totalTime
-          )} minuti.`
-        );
+        // Completa la sessione e calcola il tempo totale alla fine dell'ultimo indovinello
+        if (user && routeIdStr) {
+          const totalTime = await UserSessionManager.completeSession();
+          if (totalTime !== null) {
+            setCompletionTime(totalTime);
+            Alert.alert(
+              'Congratulazioni!',
+              `Hai completato tutti gli indovinelli in ${formatTime(
+                totalTime
+              )} minuti.`
+            );
+          }
+        }
         router.replace('/routes');
       }
     } else {
@@ -111,7 +121,6 @@ const RiddleManager = () => {
     }
   };
 
-  // Funzione per formattare il tempo in MM:SS
   const formatTime = (milliseconds: number) => {
     const totalSeconds = Math.floor(milliseconds / 1000);
     const minutes = Math.floor(totalSeconds / 60);
