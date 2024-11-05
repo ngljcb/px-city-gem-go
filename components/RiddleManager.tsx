@@ -3,10 +3,10 @@ import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { FIREBASE_DB } from '../FirebaseConfig';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import MapScreen from '../components/MapScreen';
-import PhotoVerification from '../components/PhotoVerification';
+import MapScreen from './MapScreen';
+import PhotoVerification from './PhotoVerification';
 
-const RiddleScreen = () => {
+const RiddleManager = () => {
   const { routeId } = useLocalSearchParams();
   const [riddles, setRiddles] = useState<any[]>([]);
   const [currentRiddleIndex, setCurrentRiddleIndex] = useState(0);
@@ -16,6 +16,8 @@ const RiddleScreen = () => {
   const [coordinates, setCoordinates] = useState({ latitude: 0, longitude: 0 });
   const [isCorrect, setIsCorrect] = useState(false);
   const [photoVerified, setPhotoVerified] = useState(false);
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [completionTime, setCompletionTime] = useState<number | null>(null);
 
   // Carica gli indovinelli da Firestore
   useEffect(() => {
@@ -58,8 +60,6 @@ const RiddleScreen = () => {
       setIsCorrect(false);
       setUserAnswer('');
       setPhotoVerified(false);
-    } else {
-      Alert.alert('Congratulazioni!', 'Hai completato tutti gli indovinelli.');
     }
   };
 
@@ -75,31 +75,51 @@ const RiddleScreen = () => {
 
   const handlePhotoVerified = (success: boolean) => {
     if (success) {
-      setPhotoVerified(true);
-      Alert.alert('Foto verificata!', 'Passa al prossimo indovinello.', [
-        {
-          text: 'Avanti',
-          onPress: () => {
-            const nextIndex = currentRiddleIndex + 1;
-            if (nextIndex < riddles.length) {
+      if (startTime === null) {
+        setStartTime(Date.now());
+      }
+
+      const nextIndex = currentRiddleIndex + 1;
+
+      if (nextIndex < riddles.length) {
+        setPhotoVerified(true);
+        Alert.alert('Foto verificata!', 'Passa al prossimo indovinello.', [
+          {
+            text: 'Avanti',
+            onPress: () => {
               setCurrentRiddleIndex(nextIndex);
               loadRiddle(nextIndex);
-            } else {
-              Alert.alert(
-                'Congratulazioni!',
-                'Hai completato tutti gli indovinelli.'
-              );
-              router.replace('/routes');
-            }
+            },
           },
-        },
-      ]);
+        ]);
+      } else {
+        const totalTime = Date.now() - (startTime ?? Date.now());
+        setCompletionTime(totalTime);
+        Alert.alert(
+          'Congratulazioni!',
+          `Hai completato tutti gli indovinelli in ${formatTime(
+            totalTime
+          )} minuti.`
+        );
+        router.replace('/routes');
+      }
     } else {
       Alert.alert(
         'Errore',
         'La foto non è stata scattata nel posto giusto. Riprova.'
       );
     }
+  };
+
+  // Funzione per formattare il tempo in MM:SS
+  const formatTime = (milliseconds: number) => {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(
+      2,
+      '0'
+    )}`;
   };
 
   return (
@@ -113,22 +133,28 @@ const RiddleScreen = () => {
       />
       {!isCorrect && <Button title="Invia" onPress={checkAnswer} />}
 
-      {/* Aggiungi la visualizzazione della mappa con le coordinate attuali */}
-      {coordinates.latitude !== 0 && coordinates.longitude !== 0 && (
-        <MapScreen
-          key={`${coordinates.latitude}-${coordinates.longitude}`}
-          latitude={coordinates.latitude}
-          longitude={coordinates.longitude}
-          isCorrect={isCorrect} // Passa isCorrect al componente
-        />
-      )}
+      {isCorrect &&
+        coordinates.latitude !== 0 &&
+        coordinates.longitude !== 0 && (
+          <MapScreen
+            key={`${coordinates.latitude}-${coordinates.longitude}`}
+            latitude={coordinates.latitude}
+            longitude={coordinates.longitude}
+            isCorrect={isCorrect}
+          />
+        )}
 
-      {/* Mostra il componente di verifica della foto se la risposta è corretta */}
       <PhotoVerification
         coordinates={coordinates}
         isAnswerCorrect={isCorrect}
         onPhotoVerified={handlePhotoVerified}
       />
+
+      {completionTime !== null && (
+        <Text style={styles.timerText}>
+          Tempo di completamento: {formatTime(completionTime)}
+        </Text>
+      )}
     </View>
   );
 };
@@ -152,6 +178,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderRadius: 5,
   },
+  timerText: {
+    fontSize: 16,
+    marginTop: 20,
+    textAlign: 'center',
+  },
 });
 
-export default RiddleScreen;
+export default RiddleManager;

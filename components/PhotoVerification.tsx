@@ -61,13 +61,8 @@ const PhotoVerification: React.FC<PhotoVerificationProps> = ({
     );
 
     if (distance <= 50) {
-      Alert.alert('Successo!', 'La foto è stata scattata nel posto giusto.');
       onPhotoVerified(true);
     } else {
-      Alert.alert(
-        'Errore',
-        'La foto non è stata scattata nel posto giusto. Riprova.'
-      );
       onPhotoVerified(false);
     }
   };
