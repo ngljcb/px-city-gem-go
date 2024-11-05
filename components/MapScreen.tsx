@@ -5,15 +5,25 @@ import MapView, { Marker } from 'react-native-maps';
 interface MapScreenProps {
   latitude: number;
   longitude: number;
+  isCorrect: boolean; // Aggiungi isCorrect come prop
 }
 
-const MapScreen: React.FC<MapScreenProps> = ({ latitude, longitude }) => {
+const MapScreen: React.FC<MapScreenProps> = ({
+  latitude,
+  longitude,
+  isCorrect,
+}) => {
   const INITIAL_REGION = {
     latitude,
     longitude,
     latitudeDelta: 0.002,
     longitudeDelta: 0.002,
   };
+
+  // Rendi visibile la mappa solo se isCorrect è true
+  if (!isCorrect) {
+    return null;
+  }
 
   return (
     <View style={styles.container}>

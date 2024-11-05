@@ -119,6 +119,7 @@ const RiddleScreen = () => {
           key={`${coordinates.latitude}-${coordinates.longitude}`}
           latitude={coordinates.latitude}
           longitude={coordinates.longitude}
+          isCorrect={isCorrect} // Passa isCorrect al componente
         />
       )}
 
