@@ -1,5 +1,5 @@
 import { View, StyleSheet } from 'react-native';
-import RiddleScreen from '@/components/RiddleScreen';
+import RiddleScreen from '@/components/RiddleManager';
 
 export default function Riddles() {
   return (
