@@ -1,5 +1,3 @@
-// RiddleManager.tsx
-
 import { FIREBASE_DB } from '../FirebaseConfig';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 

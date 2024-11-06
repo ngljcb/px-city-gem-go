@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Alert, Image, ImageBackground } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import MapScreen from '@/components/MapScreen';
 import PhotoVerification from '@/components/PhotoVerification';
 import UserSessionManager from '@/components/UserSessionManager';
 import RiddleManager from '@/components/RiddleManager';
 import { getAuth } from 'firebase/auth';
+import { styles } from '../constants/styles/Default';
 
 const Riddles = () => {
   const { routeId } = useLocalSearchParams();
@@ -94,14 +95,19 @@ const Riddles = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground source={require('@/assets/images/riddles-backdrop.png')} style={styles.container} resizeMode="cover">
       {loading ? (
-        <Text>Caricamento...</Text>
+        <Image source={require('@/assets/images/loading.gif')} style={styles.img} resizeMode="cover" />
       ) : (
-        <>
-          <Text style={styles.riddleText}>{currentRiddle?.question || 'Errore nel caricamento della domanda'}</Text>
+        <View style={styles.content}>
+          <Text style={styles.title}>{currentRiddle?.question || 'Errore nel caricamento della domanda'}</Text>
           <TextInput style={styles.input} placeholder="Inserisci la tua risposta" value={userAnswer} onChangeText={setUserAnswer} />
-          {!isCorrect && <Button title="Invia" onPress={checkAnswer} />}
+
+          {!isCorrect && (
+            <TouchableOpacity style={styles.button} onPress={checkAnswer}>
+              <Text style={styles.buttonText}>Invia</Text>
+            </TouchableOpacity>
+          )}
 
           {isCorrect && currentRiddle && (
             <MapScreen
@@ -119,36 +125,10 @@ const Riddles = () => {
           />
 
           {completionTime !== null && <Text style={styles.timerText}>Tempo di completamento: {formatTime(completionTime)}</Text>}
-        </>
+        </View>
       )}
-    </View>
+    </ImageBackground>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 20,
-    width: '100%',
-  },
-  riddleText: {
-    fontSize: 18,
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    marginBottom: 20,
-    borderRadius: 5,
-  },
-  timerText: {
-    fontSize: 16,
-    marginTop: 20,
-    textAlign: 'center',
-  },
-});
 
 export default Riddles;

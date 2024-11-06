@@ -21,7 +21,7 @@ export default {
 };
 
 export const ColorPalette = {
-  primary: '#20AB6E',
+  primary: '#00B386', //00B386 20AB6E
   lime: '#D7FFD4',
   pink: '#F655FF',
   brown: '#29271D',
@@ -37,4 +37,6 @@ export const ColorPalette = {
   input: '#EEE9F0',
   selected: '#F7F2F9',
   dark: '#2F2D32',
+  white: '#FFFFFF',
+  black: '#000000',
 };
