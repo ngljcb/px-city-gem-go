@@ -1,9 +1,5 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from '@react-navigation/native';
+import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { router, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -71,6 +67,7 @@ function RootLayoutNav() {
         />
         <Stack.Screen name="routes" options={{ headerShown: false }} />
         <Stack.Screen name="riddles" options={{ headerShown: false }} />
+        <Stack.Screen name="results" options={{ headerShown: false }} />
       </Stack>
     </ThemeProvider>
   );

@@ -65,9 +65,8 @@ const Riddles = () => {
         const totalTime = await UserSessionManager.completeSession();
         if (totalTime !== null) {
           setCompletionTime(totalTime);
-          Alert.alert('Congratulazioni!', `Hai completato tutti gli indovinelli in ${formatTime(totalTime)} minuti.`);
+          handleRouteSelect(totalTime.toString());
         }
-        router.replace('/routes');
       } else {
         setPhotoVerified(true);
         Alert.alert('Foto verificata!', 'Passa al prossimo indovinello.', [
@@ -87,6 +86,13 @@ const Riddles = () => {
     }
   };
 
+  const handleRouteSelect = (totalTime: string) => {
+    router.push({
+      pathname: '/results',
+      params: { totalTime },
+    });
+  };
+
   const formatTime = (milliseconds: number) => {
     const totalSeconds = Math.floor(milliseconds / 1000);
     const minutes = Math.floor(totalSeconds / 60);
@@ -100,7 +106,7 @@ const Riddles = () => {
         <Image source={require('@/assets/images/loading.gif')} style={styles.img} resizeMode="cover" />
       ) : (
         <View style={styles.content}>
-          <Text style={styles.title}>{currentRiddle?.question || 'Errore nel caricamento della domanda'}</Text>
+          <Text style={styles.text}>{currentRiddle?.question}</Text>
           <TextInput style={styles.input} placeholder="Inserisci la tua risposta" value={userAnswer} onChangeText={setUserAnswer} />
 
           {!isCorrect && (
