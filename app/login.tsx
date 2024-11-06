@@ -29,7 +29,7 @@ const Login = () => {
     setLoading(true);
     try {
       const user = await createUserWithEmailAndPassword(auth, email, password);
-      if (user) router.replace('/routes');
+      if (user) router.replace('/help');
     } catch (error: any) {
       console.log(error);
       alert('Sign in failed: ' + error.message);
