@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Button, Alert } from 'react-native';
+import { View, TouchableOpacity, Alert, Text } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
+import { styles } from '../constants/styles/Default';
 
 interface PhotoVerificationProps {
   coordinates: { latitude: number; longitude: number };
@@ -9,29 +10,17 @@ interface PhotoVerificationProps {
   onPhotoVerified: (success: boolean) => void;
 }
 
-const PhotoVerification: React.FC<PhotoVerificationProps> = ({
-  coordinates,
-  isAnswerCorrect,
-  onPhotoVerified,
-}) => {
+const PhotoVerification: React.FC<PhotoVerificationProps> = ({ coordinates, isAnswerCorrect, onPhotoVerified }) => {
   const takePhoto = async () => {
-    const { status: cameraStatus } =
-      await ImagePicker.requestCameraPermissionsAsync();
+    const { status: cameraStatus } = await ImagePicker.requestCameraPermissionsAsync();
     if (cameraStatus !== 'granted') {
-      Alert.alert(
-        'Permesso negato',
-        'È necessario il permesso per accedere alla fotocamera.'
-      );
+      Alert.alert('Permesso negato', 'È necessario il permesso per accedere alla fotocamera.');
       return;
     }
 
-    const { status: locationStatus } =
-      await Location.requestForegroundPermissionsAsync();
+    const { status: locationStatus } = await Location.requestForegroundPermissionsAsync();
     if (locationStatus !== 'granted') {
-      Alert.alert(
-        'Permesso negato',
-        'È necessario il permesso per accedere alla posizione.'
-      );
+      Alert.alert('Permesso negato', 'È necessario il permesso per accedere alla posizione.');
       return;
     }
 
@@ -49,16 +38,8 @@ const PhotoVerification: React.FC<PhotoVerificationProps> = ({
     }
   };
 
-  const verifyPhotoLocation = (userLocation: {
-    latitude: number;
-    longitude: number;
-  }) => {
-    const distance = getDistanceFromLatLonInMeters(
-      coordinates.latitude,
-      coordinates.longitude,
-      userLocation.latitude,
-      userLocation.longitude
-    );
+  const verifyPhotoLocation = (userLocation: { latitude: number; longitude: number }) => {
+    const distance = getDistanceFromLatLonInMeters(coordinates.latitude, coordinates.longitude, userLocation.latitude, userLocation.longitude);
 
     if (distance <= 50) {
       onPhotoVerified(true);
@@ -67,12 +48,7 @@ const PhotoVerification: React.FC<PhotoVerificationProps> = ({
     }
   };
 
-  const getDistanceFromLatLonInMeters = (
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number
-  ): number => {
+  const getDistanceFromLatLonInMeters = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
     const R = 6371000; // Raggio della Terra in metri
     const lat1Rad = lat1 * (Math.PI / 180);
     const lat2Rad = lat2 * (Math.PI / 180);
@@ -80,11 +56,7 @@ const PhotoVerification: React.FC<PhotoVerificationProps> = ({
     const deltaLon = (lon2 - lon1) * (Math.PI / 180);
 
     const a =
-      Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
-      Math.cos(lat1Rad) *
-        Math.cos(lat2Rad) *
-        Math.sin(deltaLon / 2) *
-        Math.sin(deltaLon / 2);
+      Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) + Math.cos(lat1Rad) * Math.cos(lat2Rad) * Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = R * c; // Distanza in metri
@@ -95,7 +67,9 @@ const PhotoVerification: React.FC<PhotoVerificationProps> = ({
   return (
     <View>
       {isAnswerCorrect && (
-        <Button title="Scatta una foto" onPress={takePhoto} />
+        <TouchableOpacity style={styles.button} onPress={takePhoto}>
+          <Text style={styles.buttonText}>Scatta una foto</Text>
+        </TouchableOpacity>
       )}
     </View>
   );

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
+import { styles } from '../constants/styles/Map';
 
 interface MapScreenProps {
   latitude: number;
@@ -8,11 +9,7 @@ interface MapScreenProps {
   isCorrect: boolean; // Aggiungi isCorrect come prop
 }
 
-const MapScreen: React.FC<MapScreenProps> = ({
-  latitude,
-  longitude,
-  isCorrect,
-}) => {
+const MapScreen: React.FC<MapScreenProps> = ({ latitude, longitude, isCorrect }) => {
   const INITIAL_REGION = {
     latitude,
     longitude,
@@ -27,12 +24,7 @@ const MapScreen: React.FC<MapScreenProps> = ({
 
   return (
     <View style={styles.container}>
-      <MapView
-        style={styles.map}
-        initialRegion={INITIAL_REGION}
-        showsUserLocation
-        showsMyLocationButton
-      >
+      <MapView style={styles.map} initialRegion={INITIAL_REGION} showsUserLocation showsMyLocationButton>
         <Marker
           coordinate={{
             latitude,
@@ -44,17 +36,5 @@ const MapScreen: React.FC<MapScreenProps> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 20,
-    justifyContent: 'center',
-  },
-  map: {
-    width: '100%',
-    height: 300,
-    marginBottom: 20,
-  },
-});
 
 export default MapScreen;
