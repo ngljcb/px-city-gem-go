@@ -65,6 +65,7 @@ function RootLayoutNav() {
             ),
           }}
         />
+        <Stack.Screen name="help" options={{ headerShown: false }} />
         <Stack.Screen name="routes" options={{ headerShown: false }} />
         <Stack.Screen name="riddles" options={{ headerShown: false }} />
         <Stack.Screen name="results" options={{ headerShown: false }} />
