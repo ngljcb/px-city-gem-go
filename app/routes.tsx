@@ -47,13 +47,13 @@ export default function Routes() {
         <Image source={require('@/assets/images/loading.gif')} style={styles.img} resizeMode="cover" />
       ) : (
         <View style={styles.content}>
-          <Text style={styles.title}>Seleziona una route:</Text>
+          <Text style={styles.text}>Seleziona una route:</Text>
           <FlatList
             data={routes}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <TouchableOpacity style={styles.button} onPress={() => handleRouteSelect(item.id)}>
-                <Text style={styles.buttonText}>{item.name || 'Route senza nome'}</Text>
+                <Text style={styles.buttonText}>{item.name}</Text>
               </TouchableOpacity>
             )}
           />

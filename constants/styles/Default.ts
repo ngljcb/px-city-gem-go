@@ -25,10 +25,18 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 40,
   },
   title: {
-    fontSize: 24,
+    fontSize: 34,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
+    color: ColorPalette.green,
+  },
+  text: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+    color: ColorPalette.black,
   },
   img: {
     width: '100%',
