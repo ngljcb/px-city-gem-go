@@ -1,32 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Alert, ImageBackground, Image } from 'react-native';
 import { useRouter } from 'expo-router';
-import { FIREBASE_DB } from '../FirebaseConfig';
-import { collection, getDocs } from 'firebase/firestore';
+import AdventureManager from '../models/AdventureManager';
 import { styles } from '../constants/styles/Default';
 
 export default function Routes() {
-  const [routes, setRoutes] = useState<any[]>([]);
-  const router = useRouter(); // Usa il router di Expo Router
+  const [routes, setRoutes] = useState<{ routeId: string; routeName: string }[]>([]);
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
 
-  // Carica le routes da Firestore
+  // Carica le routes dal database locale
   useEffect(() => {
     const fetchRoutes = async () => {
-      setLoading(true); // Imposta loading a true quando inizia la richiesta
+      setLoading(true);
       try {
-        const routesCollection = collection(FIREBASE_DB, '/Routes');
-        const querySnapshot = await getDocs(routesCollection);
-        const routesArray = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setRoutes(routesArray);
+        const adventureManager = new AdventureManager();
+
+        // Assicuriamo che i percorsi vicini siano aggiornati nel database locale
+        console.log('Fetching and storing nearby routes...');
+        await adventureManager.fetchAndStoreNearbyRoutes();
+        console.log('Nearby routes fetched and stored.');
+
+        // Carichiamo le routes dal database locale
+        console.log('Loading routes from local database...');
+        const localRoutes = await adventureManager.getLocalRoutes();
+        console.log('Routes loaded:', localRoutes);
+        setRoutes(localRoutes);
       } catch (error) {
         console.error('Errore nel caricamento delle routes:', error);
         Alert.alert('Errore', 'Non è stato possibile caricare le routes.');
       } finally {
-        setLoading(false); // Imposta loading a false al termine della richiesta
+        setLoading(false);
       }
     };
 
@@ -34,7 +38,6 @@ export default function Routes() {
   }, []);
 
   const handleRouteSelect = (routeId: string) => {
-    // Naviga alla schermata RiddleScreen passando l'ID della route
     router.push({
       pathname: '/riddles',
       params: { routeId },
@@ -47,13 +50,13 @@ export default function Routes() {
         <Image source={require('@/assets/images/loading.gif')} style={styles.img} resizeMode="cover" />
       ) : (
         <View style={styles.content}>
-          <Text style={styles.text}>Seleziona una route:</Text>
+          <Text style={styles.text}>Seleziona la tua avventura!</Text>
           <FlatList
             data={routes}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.routeId}
             renderItem={({ item }) => (
-              <TouchableOpacity style={styles.button} onPress={() => handleRouteSelect(item.id)}>
-                <Text style={styles.buttonText}>{item.name}</Text>
+              <TouchableOpacity style={styles.button} onPress={() => handleRouteSelect(item.routeId)}>
+                <Text style={styles.buttonText}>{item.routeName}</Text>
               </TouchableOpacity>
             )}
           />

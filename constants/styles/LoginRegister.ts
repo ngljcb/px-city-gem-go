@@ -40,5 +40,6 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 10,
     backgroundColor: ColorPalette.primary,
+    fontWeight: 'bold',
   },
 });
