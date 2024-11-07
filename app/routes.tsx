@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Alert, ImageBackground, Image } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Alert, ImageBackground, Image, AppState, AppStateStatus } from 'react-native';
 import { useRouter } from 'expo-router';
 import AdventureManager from '../models/AdventureManager';
 import { styles } from '../constants/styles/Default';
+import { scheduleNotification } from '../services/NotificationService';
 
 export default function Routes() {
   const [routes, setRoutes] = useState<{ routeId: string; routeName: string }[]>([]);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [appState, setAppState] = useState(AppState.currentState);
 
   // Carica le routes dal database locale
   useEffect(() => {
@@ -36,6 +38,29 @@ export default function Routes() {
 
     fetchRoutes();
   }, []);
+
+  // Gestione della notifica per quando l'app va in background
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      if (appState === 'active' && nextAppState.match(/inactive|background/)) {
+        // Programma una notifica se l'app passa in background
+        scheduleNotification(
+          'Torna a giocare!',
+          'Non fermarti ora! Completa la tua avventura.',
+          10 // 10 secondi
+        );
+      }
+      setAppState(nextAppState);
+    };
+
+    // Aggiungi l'ascoltatore di stato dell'app
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+    // Pulizia dell'ascoltatore quando il componente viene smontato
+    return () => {
+      subscription.remove();
+    };
+  }, [appState]);
 
   const handleRouteSelect = (routeId: string) => {
     router.push({
