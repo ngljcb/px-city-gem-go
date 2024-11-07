@@ -7,7 +7,7 @@ export default function Help() {
   const router = useRouter();
 
   const goToHome = () => {
-    router.replace('/routes');
+    router.back();
   };
 
   return (
@@ -42,7 +42,7 @@ export default function Help() {
         <Text style={styles.footer}>Buona caccia al tesoro e divertiti a esplorare! 🕵️‍♀️📸</Text>
 
         <TouchableOpacity style={styles.button} onPress={goToHome}>
-          <Text style={styles.buttonText}>Torna alla Home</Text>
+          <Text style={styles.buttonText}>Chiudi</Text>
         </TouchableOpacity>
       </ScrollView>
     </ImageBackground>
