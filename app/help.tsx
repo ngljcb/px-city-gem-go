@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ImageBackground } from 'react-native';
+import { Text, ScrollView, TouchableOpacity, ImageBackground } from 'react-native';
 import { useRouter } from 'expo-router';
+import { styles } from '../constants/styles/Help';
 
 export default function Help() {
   const router = useRouter();
@@ -10,9 +11,9 @@ export default function Help() {
   };
 
   return (
-    <ImageBackground source={require('@/assets/images/riddles-backdrop.gif')} style={styles.container} resizeMode="cover">
+    <ImageBackground source={require('@/assets/images/riddles-backdrop.png')} style={styles.container} resizeMode="cover">
       <ScrollView style={styles.content}>
-        <Text style={styles.title}>Guida al Gioco City-Gem-Go!</Text>
+        <Text style={styles.title}>Guida al gioco</Text>
         <Text style={styles.text}>Completa tutti gli indovinelli nel minor tempo possibile e scopri angoli nascosti della città!</Text>
 
         <Text style={styles.sectionTitle}>1. Inizia la tua avventura</Text>
@@ -47,54 +48,3 @@ export default function Help() {
     </ImageBackground>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-    marginHorizontal: 30,
-    paddingHorizontal: 20,
-    marginTop: 220,
-    height: 500,
-    maxHeight: 600,
-    backgroundColor: 'rgba(258, 258, 258, 0.5)',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 15,
-    marginBottom: 5,
-  },
-  text: {
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  footer: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginTop: 20,
-    marginBottom: 20,
-  },
-  button: {
-    backgroundColor: '#007BFF',
-    padding: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 40,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-});

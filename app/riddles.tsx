@@ -3,8 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, Alert, Image, ImageBackground 
 import { router, useLocalSearchParams } from 'expo-router';
 import MapScreen from '@/components/MapScreen';
 import PhotoVerification from '@/components/PhotoVerification';
-import UserSessionManager from '@/components/UserSessionManager';
-import RiddleManager from '@/components/RiddleManager';
+import UserSessionManager from '@/controllers/UserSessionManager';
+import RiddleController from '@/controllers/RiddleController';
 import { getAuth } from 'firebase/auth';
 import { styles } from '../constants/styles/Default';
 
@@ -15,7 +15,7 @@ const Riddles = () => {
   const [isCorrect, setIsCorrect] = useState(false);
   const [photoVerified, setPhotoVerified] = useState(false);
   const [completionTime, setCompletionTime] = useState<number | null>(null);
-  const [riddleManager] = useState(new RiddleManager());
+  const [riddleController] = useState(new RiddleController());
   const [loading, setLoading] = useState(true);
 
   const auth = getAuth();
@@ -24,10 +24,10 @@ const Riddles = () => {
   useEffect(() => {
     if (routeIdStr) {
       setLoading(true);
-      riddleManager
+      riddleController
         .loadRiddles(routeIdStr)
         .then(() => {
-          const initialRiddle = riddleManager.getCurrentRiddle();
+          const initialRiddle = riddleController.getCurrentRiddle();
           if (!initialRiddle) {
             Alert.alert('Errore', 'Non è stato possibile caricare gli indovinelli.');
           }
@@ -40,15 +40,15 @@ const Riddles = () => {
     }
   }, [routeIdStr]);
 
-  const currentRiddle = riddleManager.getCurrentRiddle();
+  const currentRiddle = riddleController.getCurrentRiddle();
 
   const checkAnswer = () => {
-    if (riddleManager.checkAnswer(userAnswer)) {
+    if (riddleController.checkAnswer(userAnswer)) {
       setIsCorrect(true);
       Alert.alert('Corretto!', 'Ora scatta una foto per procedere.');
 
       // Avvia la sessione al primo indovinello risolto
-      if (riddleManager.isFirstRiddle() && user && routeIdStr) {
+      if (riddleController.isFirstRiddle() && user && routeIdStr) {
         UserSessionManager.startSession(user.uid, routeIdStr)
           .then(() => console.log('Session started'))
           .catch((error) => console.error('Error starting session:', error));
@@ -61,7 +61,7 @@ const Riddles = () => {
 
   const handlePhotoVerified = async (success: boolean) => {
     if (success) {
-      if (riddleManager.isLastRiddle()) {
+      if (riddleController.isLastRiddle()) {
         const totalTime = await UserSessionManager.completeSession();
         if (totalTime !== null) {
           setCompletionTime(totalTime);
@@ -73,7 +73,7 @@ const Riddles = () => {
           {
             text: 'Avanti',
             onPress: () => {
-              riddleManager.moveToNextRiddle();
+              riddleController.moveToNextRiddle();
               setIsCorrect(false);
               setUserAnswer('');
               setPhotoVerified(false);
