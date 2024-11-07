@@ -3,10 +3,11 @@ import { View, Text, TextInput, TouchableOpacity, Alert, Image, ImageBackground 
 import { router, useLocalSearchParams } from 'expo-router';
 import MapScreen from '@/components/MapScreen';
 import PhotoVerification from '@/components/PhotoVerification';
-import UserSessionManager from '@/controllers/UserSessionManager';
+import UserSessionManager from '@/models/UserSessionManager';
 import RiddleController from '@/controllers/RiddleController';
 import { getAuth } from 'firebase/auth';
 import { styles } from '../constants/styles/Default';
+import FloatingButton from '@/components/FloatingButton';
 
 const Riddles = () => {
   const { routeId } = useLocalSearchParams();
@@ -93,21 +94,14 @@ const Riddles = () => {
     });
   };
 
-  const formatTime = (milliseconds: number) => {
-    const totalSeconds = Math.floor(milliseconds / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-  };
-
   return (
     <ImageBackground source={require('@/assets/images/riddles-backdrop.png')} style={styles.container} resizeMode="cover">
       {loading ? (
         <Image source={require('@/assets/images/loading.gif')} style={styles.img} resizeMode="cover" />
       ) : (
         <View style={styles.content}>
-          <Text style={styles.text}>{currentRiddle?.question}</Text>
-          <TextInput style={styles.input} placeholder="Inserisci la tua risposta" value={userAnswer} onChangeText={setUserAnswer} />
+          <Text style={styles.text}>{isCorrect ? currentRiddle?.answer : currentRiddle?.question}</Text>
+          {!isCorrect && <TextInput style={styles.input} placeholder="Inserisci la tua risposta" value={userAnswer} onChangeText={setUserAnswer} />}
 
           {!isCorrect && (
             <TouchableOpacity style={styles.button} onPress={checkAnswer}>
@@ -117,22 +111,21 @@ const Riddles = () => {
 
           {isCorrect && currentRiddle && (
             <MapScreen
-              key={`${currentRiddle.gps.latitude}-${currentRiddle.gps.longitude}`}
-              latitude={currentRiddle.gps.latitude}
-              longitude={currentRiddle.gps.longitude}
+              key={`${currentRiddle.latitude}-${currentRiddle.longitude}`}
+              latitude={currentRiddle.latitude}
+              longitude={currentRiddle.longitude}
               isCorrect={isCorrect}
             />
           )}
 
           <PhotoVerification
-            coordinates={currentRiddle ? currentRiddle.gps : { latitude: 0, longitude: 0 }}
+            coordinates={currentRiddle ? { latitude: currentRiddle.latitude, longitude: currentRiddle.longitude } : { latitude: 0, longitude: 0 }}
             isAnswerCorrect={isCorrect}
             onPhotoVerified={handlePhotoVerified}
           />
-
-          {completionTime !== null && <Text style={styles.timerText}>Tempo di completamento: {formatTime(completionTime)}</Text>}
         </View>
       )}
+      <FloatingButton />
     </ImageBackground>
   );
 };
