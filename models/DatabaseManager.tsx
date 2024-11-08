@@ -1,17 +1,17 @@
 import * as Location from 'expo-location';
 
-import AdventureDbManager from '../services/AdventureDbManager';
+import SQLiteManager from '../services/SQLiteManager';
 import FirebaseManager from '../services/FirebaseManager';
 
 import { getDistance } from '../utils/distanceCalculator';
 
 class DatabaseManager {
-  private localDatabaseManager: AdventureDbManager;
+  private localDatabaseManager: SQLiteManager;
   private localFirebaseManager: FirebaseManager;
 
   constructor() {
     this.localFirebaseManager = new FirebaseManager();
-    this.localDatabaseManager = new AdventureDbManager();
+    this.localDatabaseManager = new SQLiteManager();
   }
 
   // Fetch nearby routes and associated questions, then save them in the local database
