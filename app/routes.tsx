@@ -1,30 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Alert, ImageBackground, Image } from 'react-native';
+import React from 'react';
+import { View, Text, FlatList, TouchableOpacity, ImageBackground, Image } from 'react-native';
 import { useRouter } from 'expo-router';
-import RoutesController from '../controllers/RoutesController';
-import { styles } from '../styles/Default';
+
+import useRoutesViewModel from '../viewmodels/RoutesViewModel';
+
 import FloatingButton from '@/components/FloatingButton';
+import { styles } from '../styles/Default';
 
 export default function Routes() {
-  const [routes, setRoutes] = useState<{ routeId: string; routeName: string }[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { routes, loading } = useRoutesViewModel();
   const router = useRouter();
-  const routesController = new RoutesController();
-
-  // Carica le routes dal database locale
-  useEffect(() => {
-    routesController.fetchRoutes(setRoutes, setLoading).catch((error) => {
-      Alert.alert('Errore', error.message);
-    });
-
-    // Aggiungi l'ascoltatore di stato dell'app
-    routesController.addAppStateListener();
-
-    // Rimuovi l'ascoltatore al dismount del componente
-    return () => {
-      routesController.removeAppStateListener();
-    };
-  }, []);
 
   const handleRouteSelect = (routeId: string) => {
     router.push({
