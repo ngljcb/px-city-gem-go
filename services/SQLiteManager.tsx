@@ -1,6 +1,6 @@
 import * as SQLite from 'expo-sqlite/legacy';
 
-class AdventureDbManager {
+class SQLiteManager {
   private db: SQLite.SQLiteDatabase;
 
   constructor() {
@@ -149,4 +149,4 @@ class AdventureDbManager {
   }
 }
 
-export default AdventureDbManager;
+export default SQLiteManager;
