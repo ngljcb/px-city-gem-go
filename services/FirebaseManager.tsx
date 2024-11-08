@@ -1,5 +1,5 @@
 import { FIREBASE_DB } from '../FirebaseConfig';
-import { collection, doc, getDoc, setDoc, updateDoc, deleteDoc, getDocs, query, orderBy } from 'firebase/firestore';
+import { collection, doc, getDoc, setDoc, updateDoc, deleteDoc, getDocs, query, orderBy, where, limit } from 'firebase/firestore';
 
 class FirebaseManager {
   // Metodo per ottenere un singolo documento da una collezione
@@ -32,15 +32,43 @@ class FirebaseManager {
     }
   }
 
-  // Nuovo metodo per ottenere documenti ordinati da una sotto-collezione
+  // Metodo per ottenere documenti ordinati da una sotto-collezione
   async getOrderedDocuments(subCollectionPath: string, orderByField: string): Promise<any[]> {
     try {
       const subCollRef = collection(FIREBASE_DB, subCollectionPath);
-      const orderedQuery = query(subCollRef, orderBy(orderByField, 'asc'));
+      const orderedQuery = query(subCollRef, orderBy(orderByField, 'asc'), limit(100));
       const querySnapshot = await getDocs(orderedQuery);
       return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     } catch (error) {
       console.error(`Errore nel recupero dei documenti da ${subCollectionPath} ordinati per ${orderByField}:`, error);
+      throw error;
+    }
+  }
+
+  // Metodo per ottenere documenti ordinati da una sotto-collezione con filtri specifici e limite
+  async getFilteredAndOrderedDocuments(
+    subCollectionPath: string,
+    whereField: string,
+    whereValue: any,
+    orderByField: string,
+    orderDirection: 'asc' | 'desc',
+    maxResults: number
+  ): Promise<any[]> {
+    try {
+      const subCollRef = collection(FIREBASE_DB, subCollectionPath);
+      const filteredAndOrderedQuery = query(
+        subCollRef,
+        where(whereField, '==', whereValue),
+        orderBy(orderByField, orderDirection),
+        limit(maxResults)
+      );
+      const querySnapshot = await getDocs(filteredAndOrderedQuery);
+      return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+      console.error(
+        `Errore nel recupero dei documenti da ${subCollectionPath} con filtro ${whereField} = ${whereValue}, ordinati per ${orderByField} e con limite ${maxResults}:`,
+        error
+      );
       throw error;
     }
   }

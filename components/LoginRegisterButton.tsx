@@ -4,7 +4,7 @@ import { Link } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ColorPalette } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
-import { styles } from '../constants/styles/LoginRegister';
+import { styles } from '../styles/LoginRegister';
 
 const LoginRegisterButton = () => {
   const { bottom } = useSafeAreaInsets();

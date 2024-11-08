@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { styles } from '../constants/styles/Map';
+import { styles } from '../styles/Map';
 
 interface MapScreenProps {
   latitude: number;
