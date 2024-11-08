@@ -6,7 +6,7 @@ import PhotoVerification from '@/components/PhotoVerification';
 import UserSessionManager from '@/models/UserSessionManager';
 import RiddleController from '@/controllers/RiddleController';
 import { getAuth } from 'firebase/auth';
-import { styles } from '../constants/styles/Default';
+import { styles } from '../styles/Default';
 import FloatingButton from '@/components/FloatingButton';
 
 const Riddles = () => {
@@ -66,7 +66,7 @@ const Riddles = () => {
         const totalTime = await UserSessionManager.completeSession();
         if (totalTime !== null) {
           setCompletionTime(totalTime);
-          handleRouteSelect(totalTime.toString());
+          handleRouteSelect(totalTime.toString(), routeIdStr.toString());
         }
       } else {
         setPhotoVerified(true);
@@ -87,10 +87,10 @@ const Riddles = () => {
     }
   };
 
-  const handleRouteSelect = (totalTime: string) => {
+  const handleRouteSelect = (totalTime: string, routeId: string) => {
     router.push({
       pathname: '/results',
-      params: { totalTime },
+      params: { totalTime, routeId },
     });
   };
 

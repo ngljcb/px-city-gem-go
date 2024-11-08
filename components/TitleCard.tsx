@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Image } from 'react-native';
-import { styles } from '../constants/styles/Default';
+import { styles } from '../styles/Default';
 
 const TitleCard = () => {
   return (

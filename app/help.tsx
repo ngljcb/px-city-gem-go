@@ -1,7 +1,8 @@
 import React from 'react';
 import { Text, ScrollView, TouchableOpacity, ImageBackground } from 'react-native';
+
 import { useRouter } from 'expo-router';
-import { styles } from '../constants/styles/Help';
+import { styles } from '../styles/Help';
 
 export default function Help() {
   const router = useRouter();

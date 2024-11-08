@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Alert, ImageBackground, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import RoutesController from '../controllers/RoutesController';
-import { styles } from '../constants/styles/Default';
+import { styles } from '../styles/Default';
 import FloatingButton from '@/components/FloatingButton';
 
 export default function Routes() {
