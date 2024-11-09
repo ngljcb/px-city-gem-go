@@ -50,4 +50,15 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor: ColorPalette.primary,
   },
+  toggleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginVertical: 10,
+    paddingHorizontal: 10,
+  },
+  toggleText: {
+    fontSize: 16,
+    color: ColorPalette.grey,
+  },
 });
