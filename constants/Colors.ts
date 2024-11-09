@@ -32,7 +32,7 @@ export const ColorPalette = {
   blue: '#003366',
   green: '#4CAF50',
   light: '#FFFCFF',
-  grey: '#242026',
+  grey: '#555555',
   greyLight: '#B8B3BA',
   input: '#EEE9F0',
   selected: '#F7F2F9',
