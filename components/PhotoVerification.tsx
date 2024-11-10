@@ -2,6 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, Alert, Text } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
+import * as MediaLibrary from 'expo-media-library';
 import { getDistance } from '../utils/distanceCalculator';
 import { styles } from '../styles/Default';
 
@@ -35,17 +36,27 @@ const PhotoVerification: React.FC<PhotoVerificationProps> = ({ coordinates, isAn
     const result = await ImagePicker.launchCameraAsync();
 
     if (!result.canceled) {
-      verifyPhotoLocation(userLocation);
+      verifyPhotoLocation(userLocation, result.assets[0].uri);
     }
   };
 
-  const verifyPhotoLocation = (userLocation: { latitude: number; longitude: number }) => {
+  const verifyPhotoLocation = async (userLocation: { latitude: number; longitude: number }, photoUri: string) => {
     const distance = getDistance(coordinates.latitude, coordinates.longitude, userLocation.latitude, userLocation.longitude);
 
     if (distance <= 50) {
       onPhotoVerified(true);
+      await savePhotoToGallery(photoUri);
     } else {
       onPhotoVerified(false);
+    }
+  };
+
+  const savePhotoToGallery = async (photoUri: string) => {
+    const { status } = await MediaLibrary.requestPermissionsAsync();
+    if (status === 'granted') {
+      await MediaLibrary.saveToLibraryAsync(photoUri);
+    } else {
+      Alert.alert('Permesso negato', 'Non è stato possibile salvare la foto nella galleria.');
     }
   };
 

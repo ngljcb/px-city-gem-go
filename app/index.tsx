@@ -1,10 +1,15 @@
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { useEffect } from 'react';
 import TitleCard from '@/components/TitleCard';
 import LoginRegisterButton from '@/components/LoginRegisterButton';
-import { useNotificationPermissions } from '../services/NotificationService';
+import NotificationHandler from '../services/NotificationHandler';
 
 export default function Index() {
-  useNotificationPermissions();
+  const notificationHandler = new NotificationHandler();
+
+  useEffect(() => {
+    notificationHandler.requestPermissions();
+  }, []);
 
   return (
     <View

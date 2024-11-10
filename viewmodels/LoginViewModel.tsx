@@ -11,7 +11,6 @@ const useLoginViewModel = (type: string) => {
   const [saveCredentials, setSaveCredentials] = useState(false);
   const loginModel = new LoginModel();
 
-  // Load saved credentials and flag state on load
   useEffect(() => {
     const loadCredentials = async () => {
       const savedEmail = await AsyncStorage.getItem('email');
@@ -28,10 +27,9 @@ const useLoginViewModel = (type: string) => {
     }
   }, [type]);
 
-  // Update AsyncStorage when saveCredentials is toggled
   const handleSaveCredentialsToggle = async (value: boolean) => {
     setSaveCredentials(value);
-    await AsyncStorage.setItem('saveCredentials', JSON.stringify(value)); // Save flag as string
+    await AsyncStorage.setItem('saveCredentials', JSON.stringify(value));
   };
 
   const signIn = async () => {
@@ -40,12 +38,11 @@ const useLoginViewModel = (type: string) => {
       const user = await loginModel.signIn(email, password);
 
       if (user) {
-        // If login is successful, retrieve and save the username
         const uid = user.user.uid;
         const fetchedUsername = await loginModel.fetchUsername(uid);
         if (fetchedUsername) {
           setUsername(fetchedUsername);
-          await AsyncStorage.setItem('username', fetchedUsername); // Save username in AsyncStorage
+          await AsyncStorage.setItem('username', fetchedUsername);
         }
 
         if (saveCredentials) {
@@ -70,7 +67,17 @@ const useLoginViewModel = (type: string) => {
     setLoading(true);
     try {
       const user = await loginModel.signUp(email, password, username);
-      if (user) router.replace('/routes');
+
+      if (user) {
+        const uid = user.user.uid;
+        const fetchedUsername = await loginModel.fetchUsername(uid);
+        if (fetchedUsername) {
+          setUsername(fetchedUsername);
+          await AsyncStorage.setItem('username', fetchedUsername);
+        }
+
+        router.replace('/routes');
+      }
     } catch (error: any) {
       console.log(error);
       alert('Sign up failed: ' + error.message);

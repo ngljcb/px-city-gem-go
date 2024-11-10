@@ -23,7 +23,7 @@ export default function Results() {
         <Text style={styles.title}>Congratulazioni!</Text>
         <Text style={styles.text}>Hai completato il gioco in {formatTime(Number(totalTime))} minuti!</Text>
         <TouchableOpacity style={styles.button} onPress={() => handleRouteSelect(routeIdStr)}>
-          <Text style={styles.buttonText}>Torna alla Home</Text>
+          <Text style={styles.buttonText}>Scoreboard</Text>
         </TouchableOpacity>
       </View>
     </ImageBackground>

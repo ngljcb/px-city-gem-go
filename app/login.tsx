@@ -1,5 +1,3 @@
-// src/views/Login.tsx
-
 import { View, Text, KeyboardAvoidingView, Platform, ActivityIndicator, TextInput, TouchableOpacity, Switch } from 'react-native';
 import React from 'react';
 import { useLocalSearchParams } from 'expo-router';

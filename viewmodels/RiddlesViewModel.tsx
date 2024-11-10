@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
+
 import RiddleModel, { Riddle } from '../models/RiddleModel';
 import UserSessionManager from '../models/UserSessionManager';
+
+import NotificationHandler from '../services/NotificationHandler';
+
 import { getAuth } from 'firebase/auth';
 
 const useRiddlesViewModel = (routeId: string) => {
   const riddleModel = new RiddleModel();
+  const notificationHandler = new NotificationHandler();
 
-  // State for riddles and tracking
   const [riddles, setRiddles] = useState<Riddle[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [userAnswer, setUserAnswer] = useState('');
@@ -15,7 +19,6 @@ const useRiddlesViewModel = (routeId: string) => {
   const [completionTime, setCompletionTime] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Authentication for session management
   const auth = getAuth();
   const user = auth.currentUser;
 
@@ -25,7 +28,7 @@ const useRiddlesViewModel = (routeId: string) => {
       try {
         const loadedRiddles = await riddleModel.loadRiddles(routeId);
         setRiddles(loadedRiddles);
-        setCurrentIndex(0); // Reset index on new load
+        setCurrentIndex(0);
       } catch (error) {
         console.error('Error loading riddles:', error);
       } finally {
@@ -34,6 +37,12 @@ const useRiddlesViewModel = (routeId: string) => {
     };
 
     if (routeId) fetchRiddles();
+
+    notificationHandler.addAppStateListener('Torna a giocare!', 'Non fermarti ora! Completa la tua avventura.');
+
+    return () => {
+      notificationHandler.removeAppStateListener();
+    };
   }, [routeId]);
 
   const getCurrentRiddle = () => {
@@ -43,7 +52,7 @@ const useRiddlesViewModel = (routeId: string) => {
   const moveToNextRiddle = () => {
     if (currentIndex < riddles.length - 1) {
       setCurrentIndex((prevIndex) => prevIndex + 1);
-      setIsCorrect(false); // Reset for next riddle
+      setIsCorrect(false);
       setUserAnswer('');
       setPhotoVerified(false);
     }
@@ -53,12 +62,12 @@ const useRiddlesViewModel = (routeId: string) => {
     const currentRiddle = getCurrentRiddle();
 
     if (currentRiddle && userAnswer.toLowerCase().trim() === currentRiddle.answer.toLowerCase().trim()) {
-      setIsCorrect(true); // Update isCorrect for state tracking
-      return true; // Answer is correct
+      setIsCorrect(true);
+      return true;
     } else {
-      setIsCorrect(false); // Update isCorrect for state tracking
-      setUserAnswer(''); // Clear answer for incorrect attempt
-      return false; // Answer is incorrect
+      setIsCorrect(false);
+      setUserAnswer('');
+      return false;
     }
   };
 
@@ -75,16 +84,16 @@ const useRiddlesViewModel = (routeId: string) => {
       if (isLastRiddle()) {
         const totalTime = await UserSessionManager.completeSession();
         setCompletionTime(totalTime);
-        return true; // Verification successful and last riddle completed
+        return true;
       } else {
         if (isFirstRiddle() && user) {
           await UserSessionManager.startSession(user.uid, routeId);
         }
         moveToNextRiddle();
-        return false; // Verification successful, but more riddles remain
+        return false;
       }
     }
-    return false; // Verification failed
+    return false;
   };
 
   return {
