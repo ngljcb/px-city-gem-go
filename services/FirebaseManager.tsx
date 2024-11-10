@@ -73,6 +73,19 @@ class FirebaseManager {
     }
   }
 
+  // Metodo per ottenere documenti ordinati da una sotto-collezione con filtri specifici e limite
+  async getFilteredDocuments(subCollectionPath: string, whereField: string, whereValue: any): Promise<any[]> {
+    try {
+      const subCollRef = collection(FIREBASE_DB, subCollectionPath);
+      const filteredQuery = query(subCollRef, where(whereField, '==', whereValue));
+      const querySnapshot = await getDocs(filteredQuery);
+      return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+      console.error(`Errore nel recupero dei documenti da ${subCollectionPath} con filtro ${whereField} = ${whereValue} :`, error);
+      throw error;
+    }
+  }
+
   // Metodo per aggiungere un documento a una collezione
   async addDocument(collectionName: string, data: any): Promise<void> {
     try {
