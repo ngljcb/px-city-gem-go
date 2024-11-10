@@ -16,7 +16,7 @@ export default function Scoreboard() {
   const renderItem = ({ item, index }: { item: Score; index: number }) => (
     <View style={styles.itemContainer}>
       <Text style={styles.rank}>{index + 1}</Text>
-      <Text style={styles.userId}>{item['user-id']}</Text>
+      <Text style={styles.userId}>{item['user-name']}</Text>
       <Text style={styles.time}>{formatTime(item['total-time'])}</Text>
     </View>
   );
@@ -30,7 +30,7 @@ export default function Scoreboard() {
           <Text style={styles.title}>Classifica - Top 10</Text>
           <FlatList
             data={scores}
-            keyExtractor={(item, index) => `${item['user-id']}-${index}`}
+            keyExtractor={(item, index) => `${item['user-name']}-${index}`}
             renderItem={renderItem}
             ListEmptyComponent={<Text style={styles.noData}>Nessun dato disponibile</Text>}
           />
