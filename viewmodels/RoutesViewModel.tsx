@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import RouteModel, { Route } from '../models/RouteModel';
+import NotificationHandler from '../services/NotificationHandler';
 
 const useRoutesViewModel = () => {
   const [routes, setRoutes] = useState<Route[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+
   const routeModel = new RouteModel();
+  const notificationHandler = new NotificationHandler();
 
   useEffect(() => {
     const fetchRoutes = async () => {
@@ -21,6 +24,12 @@ const useRoutesViewModel = () => {
     };
 
     fetchRoutes();
+
+    notificationHandler.addAppStateListener('Torna a giocare!', 'Non fermarti ora! Inizia la tua avventura.');
+
+    return () => {
+      notificationHandler.removeAppStateListener();
+    };
   }, []);
 
   return { routes, loading };
