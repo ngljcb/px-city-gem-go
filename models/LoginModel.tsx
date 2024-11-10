@@ -23,6 +23,11 @@ class LoginModel {
 
     return userCredential;
   }
+
+  async fetchUsername(uid: string): Promise<string | null> {
+    const userDoc = await this.firebaseManager.getFilteredDocuments('Users', 'uid', uid);
+    return userDoc ? userDoc[0].username : null;
+  }
 }
 
 export default LoginModel;
