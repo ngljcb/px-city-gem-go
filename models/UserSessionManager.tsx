@@ -19,6 +19,7 @@ class UserSessionManager {
 
   async completeSession(): Promise<number | null> {
     const sessionData = await AsyncStorage.getItem('session-data');
+    const username = await AsyncStorage.getItem('username');
     if (sessionData && this.startTime) {
       const { userId, routeId } = JSON.parse(sessionData);
       const endTime = Date.now();
@@ -32,6 +33,7 @@ class UserSessionManager {
           'start-time': this.startTime,
           'end-time': endTime,
           'total-time': totalTime,
+          'user-name': username,
         });
 
         await this.resetSession();

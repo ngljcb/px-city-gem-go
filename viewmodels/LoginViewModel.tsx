@@ -38,7 +38,16 @@ const useLoginViewModel = (type: string) => {
     setLoading(true);
     try {
       const user = await loginModel.signIn(email, password);
+
       if (user) {
+        // If login is successful, retrieve and save the username
+        const uid = user.user.uid;
+        const fetchedUsername = await loginModel.fetchUsername(uid);
+        if (fetchedUsername) {
+          setUsername(fetchedUsername);
+          await AsyncStorage.setItem('username', fetchedUsername); // Save username in AsyncStorage
+        }
+
         if (saveCredentials) {
           await AsyncStorage.setItem('email', email);
           await AsyncStorage.setItem('password', password);
@@ -46,6 +55,7 @@ const useLoginViewModel = (type: string) => {
           await AsyncStorage.removeItem('email');
           await AsyncStorage.removeItem('password');
         }
+
         router.replace('/routes');
       }
     } catch (error: any) {

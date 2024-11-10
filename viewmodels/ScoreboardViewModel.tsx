@@ -10,6 +10,7 @@ const useScoreboardViewModel = (routeIdStr: string) => {
       setLoading(true);
       try {
         const topScores = await ScoreModel.fetchTopScores(routeIdStr);
+        console.log(topScores);
         setScores(topScores);
       } catch (error) {
         console.error('Errore nel caricamento della classifica:', error);

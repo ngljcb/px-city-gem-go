@@ -1,7 +1,7 @@
 import FirebaseManager from '../services/FirebaseManager';
 
 export interface Score {
-  'user-id': string;
+  'user-name': string;
   'total-time': number;
   'route-id': string;
 }
