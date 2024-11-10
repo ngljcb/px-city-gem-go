@@ -54,9 +54,6 @@ const useRiddlesViewModel = (routeId: string) => {
 
     if (currentRiddle && userAnswer.toLowerCase().trim() === currentRiddle.answer.toLowerCase().trim()) {
       setIsCorrect(true); // Update isCorrect for state tracking
-      if (isFirstRiddle() && user) {
-        await UserSessionManager.startSession(user.uid, routeId);
-      }
       return true; // Answer is correct
     } else {
       setIsCorrect(false); // Update isCorrect for state tracking
@@ -80,6 +77,9 @@ const useRiddlesViewModel = (routeId: string) => {
         setCompletionTime(totalTime);
         return true; // Verification successful and last riddle completed
       } else {
+        if (isFirstRiddle() && user) {
+          await UserSessionManager.startSession(user.uid, routeId);
+        }
         moveToNextRiddle();
         return false; // Verification successful, but more riddles remain
       }
