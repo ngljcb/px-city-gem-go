@@ -32,7 +32,7 @@
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/username/citygem-go.git
+   git clone https://github.com/ngljcb/citygem-go.git
    cd citygem-go
    ```
 
@@ -80,7 +80,7 @@
 ├── app/                 # Main app screens and routes
 ├── assets/              # Static assets like images and icons
 ├── components/          # Reusable UI components
-├── constants/           # App-wide constants (e.g., colors, dimensions)
+├── constants/           # App-wide constants (e.g., colors)
 ├── models/              # Data models (business logic)
 ├── services/            # Core services like notifications & database handlers
 ├── styles/              # Styling files
