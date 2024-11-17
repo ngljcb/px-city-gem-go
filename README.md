@@ -2,7 +2,7 @@
 
 **CityGem Go!** is an interactive treasure hunt app designed to deliver unique and fun adventures. Players can explore real-world locations, solve riddles, and complete challenges through an intuitive interface.
 
-<a href="#"><img src="./assets/images/banner.gif"></a>
+<a href="#"><img src="./city-gem-go/assets/images/banner.gif"></a>
 
 ## Key Features
 
@@ -15,7 +15,7 @@
 
 ## Technologies Used
 
-<a href="#"><img src="./assets/images/presentation.gif"></a>
+<a href="#"><img src="./city-gem-go/assets/images/presentation.gif"></a>
 
 - **Frontend**: `React Native (Expo)`
 - **Backend**: `Firebase Authentication` and `Firestore`
