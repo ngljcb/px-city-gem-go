@@ -15,6 +15,8 @@
 
 ## Technologies Used
 
+<a href="#"><img src="./assets/images/presentation.gif"></a>
+
 - **Frontend**: `React Native (Expo)`
 - **Backend**: `Firebase Authentication` and `Firestore`
 - **Notifications**: `expo-notifications`
