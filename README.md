@@ -34,8 +34,8 @@
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/ngljcb/citygem-go.git
-   cd citygem-go
+   git clone https://github.com/ngljcb/px-city-gem-go.git
+   cd px-city-gem-go/city-gem-go
    ```
 
 2. **Install dependencies**:
