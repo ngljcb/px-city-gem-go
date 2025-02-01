@@ -1,1 +1,5 @@
 title: CityGem Go! App
+
+sass:
+  sass_dir: city-gem-go/assets/css
+  style: compressed
