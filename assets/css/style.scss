@@ -12,7 +12,15 @@ window {
 
 * {
   border-color: #0d1117 !important;
+}
+
+body {
   background-color: #0d1117 !important;
+}
+
+.markdown-body .highlight pre,
+.markdown-body pre {
+  background-color: #1b2b41;
 }
 
 button,
