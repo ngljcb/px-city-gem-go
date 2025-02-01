@@ -1,4 +1,4 @@
-# CityGem Go!
+# CityGem Go! App
 
 **CityGem Go!** is an interactive treasure hunt app designed to deliver unique and fun adventures. Players can explore real-world locations, solve riddles, and complete challenges through an intuitive interface.
 
