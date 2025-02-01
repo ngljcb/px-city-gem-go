@@ -23,6 +23,10 @@
 - **Geolocation**: `expo-location`
 - **Local Storage**: `SQLite` and `AsyncStorage`
 
+## Documentation & Repository
+
+You can download the complete documentation <a href="documentation.pdf">here</a>, including detailed reports of each analysis section. The repository is available <a href="https://github.com/ngljcb/px-city-gem-go">here</a> for browsing all the project resources.
+
 ## Requirements
 
 - **Node.js**: Version >= 16.x
